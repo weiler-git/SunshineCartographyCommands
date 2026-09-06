@@ -10,7 +10,7 @@ namespace LimitCartographyPins
     public class Plugin : BaseUnityPlugin
     {
         internal const string ModName = "LimitCartographyPins";
-        internal const string ModVersion = "1.1.0";
+        internal const string ModVersion = "1.1.2";
         internal const string Author = "Weiler";
         private const string ModGUID = Author + "." + ModName;
 

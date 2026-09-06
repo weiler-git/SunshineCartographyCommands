@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Splatform;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -134,7 +135,14 @@ namespace LimitCartographyPins.Patches
                     pinData.m_pos = table_ZPackage.ReadVector3();
                     pinData.m_type = (PinType)table_ZPackage.ReadInt();
                     pinData.m_checked = table_ZPackage.ReadBool();
-                    pinData.m_author = ((table_Version >= 3) ? table_ZPackage.ReadString() : "");
+                    if (table_Version >= 3)
+                    {
+                        if (Splatform.PlatformUserID.TryParse(table_ZPackage.ReadString(), out PlatformUserID platformUserID2))
+                        {
+                            pinData.m_author = platformUserID2;
+                        }
+                    }
+                    //pinData.m_author = ((table_Version >= 3) ? table_ZPackage.ReadString() : "");
                     pinData.m_save = true;
                     table_Pins.Add(pinData);
                     //Debug.Log($"m_type {pinData.m_type} {pinData.m_pos}");
@@ -145,7 +153,7 @@ namespace LimitCartographyPins.Patches
             //Debug.Log("add table pins:");
             foreach (Minimap.PinData add_Pin in __instance.m_pins)
             {
-                if (!add_Pin.m_save) continue; //skip no-save pins, like pings
+                if (IsTemporaryPin(add_Pin)) continue; //skip temporary, no-save pins, like pings
                 if (add_Pin.m_type == PinType.Death) continue; //skip death markers
                 if (IsPlayerPin(add_Pin.m_type) && !writePinDataOnce) continue; //skip playerpins unless writePinData is enabled
 
@@ -157,7 +165,7 @@ namespace LimitCartographyPins.Patches
                 Minimap.PinData table_PinNear = null;
                 foreach (Minimap.PinData table_Pin in table_Pins)
                 {
-                    if (table_Pin.m_save && Utils.DistanceXZ(add_Pin.m_pos, table_Pin.m_pos) < 1f)
+                    if (!IsTemporaryPin(table_Pin) && Utils.DistanceXZ(add_Pin.m_pos, table_Pin.m_pos) < 1f)
                     {
                         bool table_PinIsPlayerPin = false;
                         if (IsPlayerPin(table_Pin.m_type)) table_PinIsPlayerPin = true;
@@ -178,18 +186,27 @@ namespace LimitCartographyPins.Patches
 
             //append pins to package
             long playerID = Player.m_localPlayer.GetPlayerID();
-            string networkUserId = PrivilegeManager.GetNetworkUserId();
+            //string networkUserId = PrivilegeManager.GetNetworkUserId();
+            PlatformUserID platformUserID = PlatformManager.DistributionPlatform.LocalUser.PlatformUserID;
             new_ZPackage.Write(table_Pins.Count);
             foreach (PinData new_Pin in table_Pins)
             {
                 long ownerID = ((new_Pin.m_ownerID != 0L) ? new_Pin.m_ownerID : playerID);
-                string author = ((string.IsNullOrEmpty(new_Pin.m_author) && ownerID == playerID) ? networkUserId : new_Pin.m_author);
+                //string author = ((string.IsNullOrEmpty(new_Pin.m_author) && ownerID == playerID) ? networkUserId : new_Pin.m_author);
+                PlatformUserID platformUserID2 = (ownerID == playerID ? platformUserID : new_Pin.m_author);
                 new_ZPackage.Write(ownerID);
                 new_ZPackage.Write(new_Pin.m_name);
                 new_ZPackage.Write(new_Pin.m_pos);
                 new_ZPackage.Write((int)new_Pin.m_type);
                 new_ZPackage.Write(new_Pin.m_checked);
-                new_ZPackage.Write(author);
+                if (platformUserID2 != null)
+                {
+                    new_ZPackage.Write(platformUserID2.ToString());
+                }
+                else
+                {
+                    new_ZPackage.Write("");
+                }
             }
 
             writePinDataOnce = false;
@@ -204,6 +221,10 @@ namespace LimitCartographyPins.Patches
                 || pinType == PinType.Icon3
                 || pinType == PinType.Icon4
                 );
+        }
+        public static bool IsTemporaryPin(Minimap.PinData pinData)
+        {
+            return !pinData.m_save;
         }
     }
 }

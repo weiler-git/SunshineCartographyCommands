@@ -43,7 +43,8 @@ namespace LimitCartographyPins.Patches
             }
             List<Minimap.PinData> pinsToDelete = new List<Minimap.PinData>();
             foreach (Minimap.PinData pin in Minimap.m_instance.m_pins)
-            { 
+            {
+                if (Minimap_Patches.IsTemporaryPin(pin)) continue;
                 if (Minimap_Patches.IsPlayerPin(pin.m_type) && pin.m_ownerID == 0L) pinsToDelete.Add(pin);
             }
             int pinsDeleted = 0;
@@ -63,6 +64,7 @@ namespace LimitCartographyPins.Patches
             List<Minimap.PinData> pinsToDelete = new List<Minimap.PinData>();
             foreach (Minimap.PinData pin in Minimap.m_instance.m_pins)
             {
+                if (Minimap_Patches.IsTemporaryPin(pin)) continue;
                 if (Minimap_Patches.IsPlayerPin(pin.m_type) && pin.m_ownerID != 0L) pinsToDelete.Add(pin);
             }
             int pinsDeleted = 0;
@@ -82,6 +84,7 @@ namespace LimitCartographyPins.Patches
             List<Minimap.PinData> pinsToDelete = new List<Minimap.PinData>();
             foreach (Minimap.PinData pin in Minimap.m_instance.m_pins)
             {
+                if (Minimap_Patches.IsTemporaryPin(pin)) continue;
                 if (Minimap_Patches.IsPlayerPin(pin.m_type)) pinsToDelete.Add(pin);
             }
             int pinsDeleted = 0;
