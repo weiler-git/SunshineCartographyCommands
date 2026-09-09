@@ -1,77 +1,128 @@
-# LimitCartographyPins
+# SunshineCartographyCommands
 
-Valheim plugin to limit number of pins added to cartography table.
+A client-side Valheim plugin that changes how cartography table data is read and written, with commands for managing map pins.
 
-Strongly adviced to keep a backup of your character as this mod could potentially delete all your pins, be extra careful after game patches.
+> [!IMPORTANT]
+> Keep a backup of your character before using the plugin, especially after major Valheim updates.
+> Changes to Valheim's cartography system can affect how pins are imported, merged, or removed.
 
-Features:
-- Adds only explored map and boss locations to cartography table by default.
-- Can optionally add pins to cartography table.
-- Commands to remove pins from map.
+## Features
 
-## Terminal and Slashcommands:
-```
-/removemypins :: Removes all personal pins from map
-/removeotherspins :: Removes all pins from others from map
-/removeallpins :: Removes allpins from map
-/writepindata :: Enables adding pins to cartography one time
-```
+- Shares explored map data and boss locations by default.
+- Prevents other players' pins from being automatically removed when reading a cartography table.
+- Can optionally include player-created pins when writing to a cartography table.
+- Avoids importing duplicate pins.
+- Includes slash commands for removing pins from your map.
+- Client-side only; no server installation is required.
+
+## Commands
+
+`/removemypins`
+
+Removes all personal pins from your map.
+
+`/removeotherspins`
+
+Removes pins created by other players from your map.
+
+`/removeallpins`
+
+Removes all pins from your map.
+
+`/writepindata`
+
+Allows player-created pins to be included the next time you write to a cartography table.
 
 ## Installation
-Install with mod manager or manually extract into BepInEx\plugins directory.
 
-Client side only, no need to install on server as this mod only alters how you add data to the cartogarphy table
+Install using a mod manager, or manually copy the plugin into:
 
-## Plugin Details:
-### Valheims new orignal behavior when adding discoveries to map works like this:
+`BepInEx\plugins`
 
-When clicking Read on map table:
-- Merge explored map into yours
-- Delete others pins from your map
-- Import pins from table
-- Skip importing pins close to existing pins
-- Skip importing pins created by yourself
+The plugin is client-side only and does not need to be installed on the server.
 
-When clicking Write on map table:
-- Read map table into your own map as if you click read (inlcuding delete others pins from your own map)
-- Merge with your map
-- Read map again from table
-- Merge your map with table map into package
-- Add your pins into package
-- Send to Owner/Host over RPC
+## How Valheim Normally Handles Cartography Data
 
-### This mod changes to this behaviour:
+### Reading from a cartography table
 
-When reading map:
-- Skip deleting others pins from your map
-- Get all pins from the map table, including those you have made yourself
->Slash commands allows you to delete pins from your map.
->Map table can be rebuild if you want to erase all records.
+When you click **Read** on a cartography table, Valheim normally:
 
-When writing to map:
-- Skip the read operation and bypass most of the original merge code
-- Read the tables data, and merge explored map with our own.
-- Read all pins on the table, merge with our own pins.
-- Player Pins (the pins players can make themselves), will be skipped by default.
-- Duplicate pins will be skipped.
-- The merged data will be sent by RPC to Owner/Area Host
->Slash command allows you to add Player Pins to the map
- 
-### Why have it like this:
-- We have a public map that everyone can read from, with a designated character adding pins for various world locations.
-- Teams have their own map, can share pins as they wish, and can read pins from public table without removing the teams pins and vice versa.
-- Players might want their own map table to share between alts.
+- Merges explored map data into your map.
+- Removes pins created by other players from your map.
+- Imports pins stored on the cartography table.
+- Skips pins that are close to existing pins.
+- Skips pins originally created by you.
+
+### Writing to a cartography table
+
+When you click **Write**, Valheim normally:
+
+- Reads the cartography table into your map first.
+- Merges your explored map with the table data.
+- Reads the table data again.
+- Merges your map data into the cartography package.
+- Adds your pins to the package.
+- Sends the result to the cartography table owner/area host over RPC.
+
+## How SunshineCartographyCommands Changes This
+
+### Reading from a cartography table
+
+The plugin:
+
+- Prevents other players' pins from being automatically deleted from your map.
+- Imports all pins stored on the cartography table, including pins originally created by you.
+
+Use the slash commands above if you want to remove specific groups of pins from your map.
+
+If you want to completely erase the data stored in a cartography table, the table itself can be rebuilt.
+
+### Writing to a cartography table
+
+The plugin:
+
+- Skips Valheim's normal read-before-write operation.
+- Reads the existing cartography table data directly.
+- Merges your explored map with the explored map stored in the table.
+- Merges existing table pins with your pins.
+- Skips duplicate pins.
+- Skips normal player-created pins by default.
+- Sends the merged result to the cartography table owner/area host over RPC.
+
+Use `/writepindata` to allow player-created pins to be included for the next write.
+
+## Why?
+
+This plugin was originally created for a setup where:
+
+- A public cartography table is available for everyone.
+- A designated character adds useful world-location pins to the public map.
+- Individual teams maintain their own maps and pins.
+- Teams can read public map data without losing their private team pins.
+- Players can maintain personal cartography tables for sharing map data between alternate characters.
 
 ## Changelog
 
-1.1.0 Reworked from ground up as Valheim have made breaking changes, made safer approach to avoid risk of losing pins.
+### 1.1.0
 
-1.0.4 Fixed error when writing more than once.
+Reworked from the ground up following breaking changes to Valheim's cartography system. The new implementation uses a safer approach intended to reduce the risk of losing pins.
 
-1.0.3 Recompiled for Valheim V 0.217.24
+### 1.0.4
 
-1.0.2 Recompiled for Hildirs patch.
+Fixed an error when writing to a cartography table more than once.
 
-1.0.1 Fixed Null error when updating blank cartography table.
+### 1.0.3
 
-1.0.0 Initial release.
+Recompiled for Valheim 0.217.24.
+
+### 1.0.2
+
+Recompiled for the Hildir's Request update.
+
+### 1.0.1
+
+Fixed a null-reference error when updating an empty cartography table.
+
+### 1.0.0
+
+Initial release.

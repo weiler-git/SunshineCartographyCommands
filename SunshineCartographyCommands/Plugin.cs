@@ -9,7 +9,7 @@ namespace SunshineCartographyCommands
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     public class Plugin : BaseUnityPlugin
     {
-        internal const string ModName = "LimitCartographyPins";
+        internal const string ModName = "SunshineCartographyCommands";
         internal const string ModVersion = "1.2.0";
         internal const string Author = "Weiler";
         private const string ModGUID = Author + "." + ModName;
