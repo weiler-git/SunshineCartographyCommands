@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 using UnityEngine;
 using static Minimap;
 
-namespace LimitCartographyPins.Patches
+namespace SunshineCartographyCommands.Patches
 {
     [HarmonyPatch(typeof(Minimap))]
     class Minimap_Patches

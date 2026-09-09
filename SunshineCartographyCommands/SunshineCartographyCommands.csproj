@@ -7,8 +7,8 @@
     <ProjectGuid>{4499087C-1BC3-4748-807E-1B520D880D3B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LimitCartographyPins</RootNamespace>
-    <AssemblyName>LimitCartographyPins</AssemblyName>
+    <RootNamespace>SunshineCartographyCommands</RootNamespace>
+    <AssemblyName>SunshineCartographyCommands</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <LangVersion>10</LangVersion>

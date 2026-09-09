@@ -8,7 +8,7 @@ using System.Xml.Linq;
 using UnityEngine;
 using static Minimap;
 
-namespace LimitCartographyPins.Patches
+namespace SunshineCartographyCommands.Patches
 {
     [HarmonyPatch(typeof(MapTable))]
     public class MapTable_Patches
